@@ -1,11 +1,31 @@
-import React from 'react'
-import ListRow from '../components/ListRow'
+import React, { useState } from "react";
+import axios from "axios";
+import ListRow from "../components/ListRow";
 
 export default function PersonList() {
-  let person = {firstname: "Firstname", lastname: "Lastname"}
+  const [people, setPeople] = useState([]);
+  let [loaded, setLoaded] = useState(false);
+
+  const loadPerson = () => {
+    if (!loaded) {
+      axios.get("http://localhost:8000/person")
+        .then((res) => {
+          const people = res.data;
+          setPeople(people);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      setLoaded(!loaded);
+    }
+  };
+
   return (
-    <>
-      <ListRow person={person}></ListRow>
-    </>
-  )
+    <div>
+      {loadPerson()}
+      {people.map((e) => {
+        return <ListRow key={e.id} person={e}></ListRow>
+      })}
+    </div>
+  );
 }

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"gopkg.in/validator.v2"
 )
@@ -166,9 +167,9 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/person", createPerson).Methods("POST")
 	r.HandleFunc("/person/{id}", getPerson).Methods("GET")
-	r.HandleFunc("/person/", getPeople).Methods("GET")
+	r.HandleFunc("/person", getPeople).Methods("GET")
 	r.HandleFunc("/person/sorted/{sort}", getPeopleSorted).Methods("GET")
 	r.HandleFunc("/person/{id}", deletePerson).Methods("DELETE")
 	r.HandleFunc("/person/{id}", updatePerson).Methods("PUT")
-	log.Fatal(http.ListenAndServe(":8000", r))
+	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(r)))
 }
