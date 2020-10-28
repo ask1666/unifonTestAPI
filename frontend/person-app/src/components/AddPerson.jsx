@@ -29,7 +29,7 @@ export default function AddPerson(props) {
     })
       .then((res) => {
         props.reloadPeople();
-        console.log(res);
+        props.HandleAddpersonToggle()
       })
       .catch((err) => {
         console.log(err);
@@ -43,6 +43,7 @@ export default function AddPerson(props) {
           <div className="flex justify-between flex-row w-6/12">
             <h3 className="pl-2">Firstname:</h3>
             <input
+            required
               onChange={(event) => {
                 setFirstname(event.target.value);
               }}
@@ -52,6 +53,7 @@ export default function AddPerson(props) {
           <div className="flex justify-between flex-row w-6/12">
             <h3 className="pl-2">Lastname:</h3>
             <input
+            required
               onChange={(event) => {
                 setLastname(event.target.value);
               }}
@@ -70,6 +72,7 @@ export default function AddPerson(props) {
           <div className="flex justify-between flex-row w-6/12">
             <h3 className="pl-2">phonenumber:</h3>
             <input
+            required
               onChange={(event) => {
                 setPhonenumber(event.target.value);
               }}

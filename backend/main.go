@@ -12,8 +12,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 	"gopkg.in/validator.v2"
 )
+
+var socketConnections []*websocket.Conn
 
 // Person defines a Person struct
 type Person struct {
@@ -38,6 +41,9 @@ var people []Person
 
 func createPerson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	for _, conn := range socketConnections {
+		conn.WriteMessage(1, []byte("Created new person"))
+	}
 	var person Person
 	_ = json.NewDecoder(r.Body).Decode(&person)
 	if errs := validator.Validate(person); errs != nil {
@@ -54,6 +60,9 @@ func createPerson(w http.ResponseWriter, r *http.Request) {
 
 func getPerson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	for _, conn := range socketConnections {
+		conn.WriteMessage(1, []byte("requested a person"))
+	}
 	params := mux.Vars(r)
 	id, _ := uuid.Parse(params["id"])
 	for _, person := range people {
@@ -74,6 +83,9 @@ func getPeople(w http.ResponseWriter, r *http.Request) {
 
 func getPeopleSorted(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	for _, conn := range socketConnections {
+		conn.WriteMessage(1, []byte("Requested list of people sorted"))
+	}
 	params := mux.Vars(r)
 	sortedList := people
 
@@ -105,6 +117,9 @@ func getPeopleSorted(w http.ResponseWriter, r *http.Request) {
 //TODO - Refactor
 func updatePerson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	for _, conn := range socketConnections {
+		conn.WriteMessage(1, []byte("Updated a person"))
+	}
 	params := mux.Vars(r)
 	id, _ := uuid.Parse(params["id"])
 	found := false
@@ -143,6 +158,9 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 
 func deletePerson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	for _, conn := range socketConnections {
+		conn.WriteMessage(1, []byte("Deleted a person"))
+	}
 	params := mux.Vars(r)
 	id, _ := uuid.Parse(params["id"])
 	found := false
@@ -163,6 +181,25 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 
 }
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func wsEndpoint(w http.ResponseWriter, r *http.Request) {
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+
+	// upgrade this connection to a WebSocket
+	// connection
+	ws, err := upgrader.Upgrade(w, r, nil)
+	socketConnections = append(socketConnections, ws)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println("Client Connected")
+
+}
+
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/person", createPerson).Methods("POST")
@@ -171,5 +208,7 @@ func main() {
 	r.HandleFunc("/person/sorted/{sort}", getPeopleSorted).Methods("GET")
 	r.HandleFunc("/person/{id}", deletePerson).Methods("DELETE")
 	r.HandleFunc("/person/{id}", updatePerson).Methods("PUT")
+	r.HandleFunc("/ws", wsEndpoint)
 	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS", "DELETE"}), handlers.AllowedOrigins([]string{"*"}))(r)))
+
 }

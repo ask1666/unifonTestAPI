@@ -29,7 +29,7 @@ export default function EditPerson(props) {
     })
       .then((res) => {
         props.reloadPeople();
-        console.log(res);
+        props.toggleDisplay("edit")
       })
       .catch((err) => {
         console.log(err);

@@ -6,11 +6,12 @@ import AddPerson from "../components/AddPerson";
 export default function PersonList() {
   const [people, setPeople] = useState([]);
   const [loaded, setLoaded] = useState(false);
-  const [AddPersonToggle,setAddPersonToggle] = useState(false)
+  const [AddPersonToggle, setAddPersonToggle] = useState(false);
 
-  const loadPerson = () => {
+  const loadPeople = () => {
     if (!loaded) {
-      axios.get("http://localhost:8000/person")
+      axios
+        .get("http://localhost:8000/person")
         .then((res) => {
           const people = res.data;
           setPeople(people);
@@ -23,30 +24,49 @@ export default function PersonList() {
   };
 
   const reloadPeople = () => {
-    setLoaded(false)
-  }
-  
+    setLoaded(false);
+  };
+
   const DisplayAddPerson = () => {
     if (AddPersonToggle)
-      return <AddPerson reloadPeople={reloadPeople}></AddPerson>
-    else
-      return ""
-  }
+      return (
+        <AddPerson
+          HandleAddpersonToggle={HandleAddpersonToggle}
+          reloadPeople={reloadPeople}
+        ></AddPerson>
+      );
+    else return "";
+  };
+
+  const HandleAddpersonToggle = () => {
+    setAddPersonToggle(!AddPersonToggle);
+  };
 
   return (
-    <div >
+    <div>
       <div className="py-4 flex justify-center">
-        <button onClick={() => setAddPersonToggle(!AddPersonToggle)} className="bg-blue-800 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded">
+        <button
+          onClick={HandleAddpersonToggle}
+          className="bg-blue-800 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded"
+        >
           Add Person
         </button>
       </div>
-      <div className="py-4">
-        {DisplayAddPerson()}
-      </div>
-      {loadPerson()}
-      {people && people.length ? people.map((e) => {
-        return <ListRow reloadPeople={reloadPeople} key={e.id} person={e}></ListRow>
-      }): <h1 className="text-center text-2xl pt-5 font-medium">No people here</h1>}
+      <div className="py-4">{DisplayAddPerson()}</div>
+      {loadPeople()}
+      {people && people.length ? (
+        people.map((e) => {
+          return (
+            <ListRow
+              reloadPeople={reloadPeople}
+              key={e.id}
+              person={e}
+            ></ListRow>
+          )})) : (
+        <h1 className="text-center text-2xl pt-5 font-medium">
+          No people here
+        </h1>
+      )}
     </div>
   );
 }

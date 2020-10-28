@@ -32,6 +32,7 @@ export default function ListRow(props) {
     if (edit !== false) {
       return (
         <EditPerson
+          toggleDisplay={toggleDisplay}
           reloadPeople={props.reloadPeople}
           person={props.person}
         ></EditPerson>
