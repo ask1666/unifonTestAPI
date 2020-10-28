@@ -71,17 +71,14 @@ export default function PersonDetails(props) {
               disabled
             />
           </div>
-          {props.person.details.skills ? props.person.details.skills.map((e) => {
           <div className="flex justify-between justify-between flex-row w-6/12">
-            <h3 className="pl-2">Address:</h3>
-            <input
-              className="pl-2 border border-gray-700"
-              value={e}
-              key={e}
-              disabled
-            />
-          </div>
-          }) : ""}
+          <h3 className="pl-2">skills:</h3>
+          <input
+            className="pl-2 border border-gray-700"
+            defaultValue={props.person.details.skills}
+            disabled
+          />
+        </div>
         </div>
     </div>
   );

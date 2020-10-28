@@ -17,20 +17,20 @@ import (
 
 // Person defines a Person struct
 type Person struct {
-	ID          uuid.UUID `json:"id,omitempty"`
-	Firstname   string    `validate:"max=40,nonzero" json:"firstname,omitempty"`
-	Lastname    string    `validate:"max=40,nonzero" json:"lastname,omitempty"`
-	Age         int       `validate:"max=150" json:"age,omitempty"`
-	CreatedDate time.Time `json:"created_date,omitempty"`
-	Phonenumber string    `validate:"nonzero" json:"phonenumber,omitempty"`
-	Address     string    `validate:"max=40,nonzero" json:"address,omitempty"`
-	Details     Details   `json:"details,omitempty"`
+	ID          uuid.UUID `json:"id"`
+	Firstname   string    `validate:"max=40" json:"firstname"`
+	Lastname    string    `validate:"max=40" json:"lastname"`
+	Age         int       `validate:"max=150" json:"age"`
+	CreatedDate time.Time `json:"created_date"`
+	Phonenumber string    `validate:"" json:"phonenumber"`
+	Address     string    `validate:"max=40" json:"address"`
+	Details     Details   `json:"details"`
 }
 
 // Details defines a Details struct
 type Details struct {
-	Department string   `validate:"max=40,nonzero" json:"department,omitempty"`
-	Skills     []string `json:"skills,omitempty"`
+	Department string   `validate:"max=40" json:"department"`
+	Skills     []string `json:"skills"`
 }
 
 // People defines list of type Person
@@ -171,5 +171,5 @@ func main() {
 	r.HandleFunc("/person/sorted/{sort}", getPeopleSorted).Methods("GET")
 	r.HandleFunc("/person/{id}", deletePerson).Methods("DELETE")
 	r.HandleFunc("/person/{id}", updatePerson).Methods("PUT")
-	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(r)))
+	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS", "DELETE"}), handlers.AllowedOrigins([]string{"*"}))(r)))
 }
