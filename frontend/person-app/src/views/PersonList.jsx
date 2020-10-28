@@ -34,7 +34,7 @@ export default function PersonList() {
   }
 
   return (
-    <div>
+    <div >
       <div className="py-4 flex justify-center">
         <button onClick={() => setAddPersonToggle(!AddPersonToggle)} className="bg-blue-800 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded">
           Add Person
